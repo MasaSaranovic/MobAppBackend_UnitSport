@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const { resetWatchers } = require('nodemon/lib/monitor/watch');
 const cors = require('cors');
 require('dotenv/config');
+const authJwt = require('./helpers/jwt')
+const errorHandler = require('./helpers/error-handler')
 
 app.use(cors());
 app.options('*', cors())
@@ -12,6 +14,8 @@ app.options('*', cors())
 //Middleware
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(authJwt());
+app.use(errorHandler);
 
 //Routers
 const productsRoutes = require('./routers/products');
@@ -33,14 +37,14 @@ mongoose.connect(process.env.CONNECTION_STRING, {
     useUnifiedTopology: true,
     dbName: 'unitsport'
 })
-.then(() => {
-    console.log('Database Connection is ready...')
-})
-.catch((err) => {
-    console.log(err);
-})
+    .then(() => {
+        console.log('Database Connection is ready...')
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 
 //Server
-app.listen(3000, ()=>{
+app.listen(3000, () => {
     console.log('server is running http://localhost:3000');
 })
